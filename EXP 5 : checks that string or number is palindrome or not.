@@ -1,92 +1,119 @@
+PalindromeClass
 
-one.java
-
-
-import java.rmi.*;
-interface one extends Remote
-{
- public int palin(String a) throws RemoteException;
-}
-
-
-two.java
-
+package rmi;
 
 import java.rmi.*;
-import java.lang.*;
+
 import java.rmi.server.*;
-public class two extends UnicastRemoteObject implements one
-{
- public two() throws RemoteException { }
- public int palin(String a) throws RemoteException
- {
- System.out.println("Hello");
- StringBuffer str = new StringBuffer(a);
- String str1 = str.toString();
- System.out.println("Print : " + str1.toString());
-StringBuffer str2 = str.reverse();
- System.out.println("Print : " + str2.toString());
- int b = str1.compareTo(str2.toString());
- System.out.println("Print : " + b);
- if (b == 0)
- return 1;
- else
- return 0;
- }
+
+public class PalindromeClass extends UnicastRemoteObject implements Remote, 
+
+PalindromeInterface{
+
+PalindromeClass() throws RemoteException{
+
+super();
+
 }
 
+public String palindromeCheck(String s) {
 
-rmiserver.java
+String rev = "";
 
+for (int i = s.length()-1; i>=0; i--) {
 
-import java.io.*;
-import java.rmi.*;
-import java.net.*;
-public class rmiserver
-{
- public static void main(String args[]) throws Exception
- {
- try
- {
- two twox = new two();
- Naming.bind("palin", twox);
- System.out.println("Object registered");
- }
- catch(Exception e)
- {
- System.out.println("Exception" + e);
- }
- }
+rev += s.charAt(i);
+
 }
 
+if (s.equals(rev)) {
 
-rmiclient.java
+String k = "The word " + s + " is a palindrome !";
 
+return k;
 
-import java.io.*;
+}
+
+else {
+
+String k = "The word " + s + " is not a palindrome !";
+
+return k;
+
+} } }
+
+PalindromeInterface
+
+package rmi;
+
+import java.rmi.Remote;
+
+import java.rmi.RemoteException;
+
+public interface PalindromeInterface extends Remote{
+
+public String palindromeCheck(String s) throws RemoteException;
+
+}
+
+PalindromeServer
+
+package rmi;
+
 import java.rmi.*;
-import java.net.*;
-public class rmiclient
-{
- public static void main(String args[]) throws Exception
- {
- try
- {
-String s1 = "rmi://localhost/palin";
- one onex = (one)Naming.lookup(s1);
- int m = onex.palin("madam");
- System.out.println("Print : " + m);
- if (m == 1)
- {
- System.out.println("The given string is a Palindrome");
+
+import java.rmi.registry.LocateRegistry;
+
+import java.rmi.registry.Registry;
+
+public class PalindromeServer {
+
+public static void main(String[] args) throws Exception{
+
+Registry reg = LocateRegistry.createRegistry(5000);
+
+PalindromeInterface obj = new PalindromeClass();
+
+reg.bind("XYZ", obj);
+
+System.out.println("Server is running.. ");
+
+} }
+
+PalindromeClient
+
+package rmi;
+
+import java.rmi.*;
+
+import java.rmi.registry.*;
+
+public class PalindromeClient {
+
+public static void main(String[] args) throws Exception{
+
+PalindromeInterface obj1 = (PalindromeInterface)Naming.lookup("rmi://localhost:5000/XYZ");
+
+ String ans1 = obj1.palindromeCheck("HELLO");
+
+ String ans2 = obj1.palindromeCheck("RACECAR");
+
+ String ans3 = obj1.palindromeCheck("MADAM");
+
+ String ans4 = obj1.palindromeCheck("NAYAN");
+
+ String ans5 = obj1.palindromeCheck("ANCHAL");
+
+ System.out.println(ans1);
+
+ System.out.println(ans2);
+
+ System.out.println(ans3);
+
+ System.out.println(ans4);
+
+ System.out.println(ans5);
+
  }
- else
- {
- System.out.println("The given string is not a Palindrome");
- }
- }
- catch (Exception e)
- {
- System.out.println("Exception" + e);
- }
- }
+
+}
